@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="recurring_title">Contas fixas</string>
+    <string name="recurring_new">Nova conta fixa</string>
+    <string name="recurring_due_day">Vence dia %1$d</string>
+    <string name="recurring_status_paid">Pago</string>
+    <string name="recurring_status_pending">Pendente</string>
+    <string name="recurring_status_overdue">Atrasado</string>
+    <string name="recurring_empty">Nenhuma conta fixa cadastrada. Toque em \"Nova conta fixa\" para adicionar a primeira.</string>
+    <string name="recurring_all_paid">Tudo pago neste mês.</string>
+    <string name="recurring_paid_header">Pagas neste mês</string>
+    <string name="recurring_confirm_title">Confirmar pagamento</string>
+    <string name="recurring_confirm_amount">Valor pago</string>
+    <string name="recurring_confirm_confirm">Confirmar</string>
+    <string name="recurring_confirm_cancel">Cancelar</string>
+    <string name="recurring_confirm_link_existing">Já paguei — associar a um lançamento existente</string>
+    <string name="recurring_link_title">Associar lançamento</string>
+    <string name="recurring_link_subtitle">Escolha o lançamento deste mês que já corresponde ao pagamento de \"%1$s\":</string>
+    <string name="recurring_link_empty">Nenhum lançamento deste mês está disponível para associar (todos já pertencem a outra conta fixa).</string>
+    <string name="recurring_link_search">Pesquisar por nome</string>
+    <string name="recurring_link_no_match">Nenhum lançamento deste mês corresponde à pesquisa.</string>
+    <string name="recurring_link_cancel">Cancelar</string>
+    <string name="recurring_create_description">Descrição</string>
+    <string name="recurring_create_amount">Valor padrão</string>
+    <string name="recurring_create_day">Dia do vencimento (1–31)</string>
+    <string name="recurring_create_category">Categoria</string>
+    <string name="recurring_create_type_expense">Despesa</string>
+    <string name="recurring_create_type_income">Receita</string>
+    <string name="recurring_create_save">Salvar</string>
+    <string name="recurring_create_cancel">Cancelar</string>
+    <string name="recurring_delete">Excluir</string>
+    <string name="recurring_delete_title">Excluir conta fixa</string>
+    <string name="recurring_delete_message">Excluir \"%1$s\"? Os pagamentos já registrados continuam no histórico, mas ela deixa de aparecer nos próximos meses.</string>
+    <string name="recurring_delete_confirm">Excluir</string>
+    <string name="recurring_delete_cancel">Cancelar</string>
+</resources>

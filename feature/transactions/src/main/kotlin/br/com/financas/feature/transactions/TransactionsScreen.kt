@@ -13,12 +13,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -76,18 +79,38 @@ fun TransactionsScreen(
             contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            item(key = "month_selector") {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = viewModel::onPreviousMonth) {
-                        Icon(Icons.Filled.ChevronLeft, contentDescription = stringResource(R.string.transactions_previous_month))
-                    }
-                    Text(uiState.monthLabel, style = MaterialTheme.typography.titleMedium)
-                    IconButton(onClick = viewModel::onNextMonth) {
-                        Icon(Icons.Filled.ChevronRight, contentDescription = stringResource(R.string.transactions_next_month))
+            item(key = "search_field") {
+                OutlinedTextField(
+                    value = uiState.searchQuery,
+                    onValueChange = viewModel::onSearchQueryChange,
+                    label = { Text(stringResource(R.string.transactions_search)) },
+                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                    trailingIcon = {
+                        if (uiState.isSearching) {
+                            IconButton(onClick = { viewModel.onSearchQueryChange("") }) {
+                                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.transactions_search_clear))
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            if (!uiState.isSearching) {
+                item(key = "month_selector") {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = viewModel::onPreviousMonth) {
+                            Icon(Icons.Filled.ChevronLeft, contentDescription = stringResource(R.string.transactions_previous_month))
+                        }
+                        Text(uiState.monthLabel, style = MaterialTheme.typography.titleMedium)
+                        IconButton(onClick = viewModel::onNextMonth) {
+                            Icon(Icons.Filled.ChevronRight, contentDescription = stringResource(R.string.transactions_next_month))
+                        }
                     }
                 }
             }
@@ -104,12 +127,14 @@ fun TransactionsScreen(
                 }
             }
 
-            item(key = "month_total") {
-                Text(
-                    text = MoneyFormatter.format(uiState.totalCents),
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = if (uiState.totalCents < 0) FinanceTheme.colors.expense else FinanceTheme.colors.income
-                )
+            if (!uiState.isSearching) {
+                item(key = "month_total") {
+                    Text(
+                        text = MoneyFormatter.format(uiState.totalCents),
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = if (uiState.totalCents < 0) FinanceTheme.colors.expense else FinanceTheme.colors.income
+                    )
+                }
             }
 
             uiState.groups.forEach { group ->

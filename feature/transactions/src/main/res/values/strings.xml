@@ -5,6 +5,8 @@
     <string name="transactions_add">Adicionar</string>
     <string name="transactions_previous_month">Mês anterior</string>
     <string name="transactions_next_month">Próximo mês</string>
+    <string name="transactions_search">Pesquisar por nome</string>
+    <string name="transactions_search_clear">Limpar pesquisa</string>
 
     <string name="add_transaction_title">Novo lançamento</string>
     <string name="edit_transaction_title">Editar lançamento</string>

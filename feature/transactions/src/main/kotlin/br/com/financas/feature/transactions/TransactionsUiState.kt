@@ -15,8 +15,12 @@ data class TransactionsUiState(
     val monthLabel: String = "",
     val typeFilter: TypeFilter = TypeFilter.ALL,
     val totalCents: Long = 0L,
+    val searchQuery: String = "",
     val isLoading: Boolean = true
-)
+) {
+    /** Enquanto há busca ativa, os resultados abrangem todos os meses — o total do período perde sentido. */
+    val isSearching: Boolean get() = searchQuery.isNotBlank()
+}
 
 data class DayGroup(
     val header: String,

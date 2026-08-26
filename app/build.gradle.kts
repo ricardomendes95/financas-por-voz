@@ -80,6 +80,7 @@ dependencies {
     implementation(project(":feature:settings"))
     implementation(project(":feature:reports"))
     implementation(project(":feature:budgets"))
+    implementation(project(":feature:recurring"))
     implementation(project(":integration:notifications"))
     implementation(project(":integration:appfunctions"))
 

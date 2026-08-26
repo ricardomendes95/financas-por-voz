@@ -8,6 +8,7 @@
     <string name="dashboard_empty_state">Nenhum gasto ainda. Toque em Adicionar e diga seu primeiro gasto.</string>
     <string name="dashboard_settings">Configurações</string>
     <string name="dashboard_reports">Relatórios</string>
+    <string name="dashboard_recurring">Contas fixas</string>
     <string name="dashboard_budget">Orçamento do mês</string>
     <string name="dashboard_pending">%1$d pendentes do banco</string>
     <string name="dashboard_confirm">CONFIRMAR</string>

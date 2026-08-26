@@ -215,6 +215,14 @@ interface TransactionDao {
         """
     )
     suspend fun categoryTotalsByYear(years: List<Int>): List<CategoryTotalByYearRow>
+
+    /** Lançamentos gerados a partir de contas fixas (`recurrenceGroupId`) já pagos no mês. */
+    @Query("SELECT * FROM transactions WHERE recurrenceGroupId IN (:ruleIds) AND yearMonth = :yearMonth")
+    fun observePaymentsForMonth(ruleIds: List<String>, yearMonth: Int): Flow<List<TransactionEntity>>
+
+    /** Busca por descrição em todos os meses (não só no mês selecionado na tela). */
+    @Query("SELECT * FROM transactions WHERE description LIKE '%' || :query || '%' ORDER BY occurredAt DESC")
+    fun search(query: String): Flow<List<TransactionEntity>>
 }
 
 data class CategoryTotalRow(

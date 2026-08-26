@@ -24,6 +24,9 @@ data object Reports
 data object Budgets
 
 @Serializable
+data object Recurring
+
+@Serializable
 data object MonthClosing
 
 @Serializable

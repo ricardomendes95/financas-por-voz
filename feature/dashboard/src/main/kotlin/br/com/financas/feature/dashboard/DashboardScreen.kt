@@ -19,6 +19,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Mic
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,6 +44,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import br.com.financas.core.common.MoneyFormatter
+import br.com.financas.core.designsystem.component.AutoSizeText
 import br.com.financas.core.designsystem.component.MoneyText
 import br.com.financas.core.model.Insight
 import br.com.financas.core.designsystem.component.TransactionRow
@@ -58,6 +60,7 @@ fun DashboardScreen(
     onOpenSettings: () -> Unit,
     onOpenReports: () -> Unit,
     onOpenBudgets: () -> Unit,
+    onOpenRecurring: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
@@ -71,6 +74,7 @@ fun DashboardScreen(
         onOpenSettings = onOpenSettings,
         onOpenReports = onOpenReports,
         onOpenBudgets = onOpenBudgets,
+        onOpenRecurring = onOpenRecurring,
         onConfirmSuggestion = viewModel::onConfirmSuggestion,
         onIgnoreSuggestion = viewModel::onIgnoreSuggestion,
         modifier = modifier
@@ -88,6 +92,7 @@ private fun DashboardContent(
     onOpenSettings: () -> Unit,
     onOpenReports: () -> Unit,
     onOpenBudgets: () -> Unit,
+    onOpenRecurring: () -> Unit,
     onConfirmSuggestion: (String) -> Unit,
     onIgnoreSuggestion: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -100,6 +105,9 @@ private fun DashboardContent(
                 actions = {
                     IconButton(onClick = onOpenReports) {
                         Icon(Icons.Filled.BarChart, contentDescription = stringResource(R.string.dashboard_reports))
+                    }
+                    IconButton(onClick = onOpenRecurring) {
+                        Icon(Icons.Filled.Receipt, contentDescription = stringResource(R.string.dashboard_recurring))
                     }
                     IconButton(onClick = onOpenSettings) {
                         Icon(Icons.Filled.Settings, contentDescription = stringResource(R.string.dashboard_settings))
@@ -319,13 +327,15 @@ private fun BalanceCard(state: DashboardUiState) {
                 style = MaterialTheme.typography.labelMedium
             )
             Spacer(Modifier.height(4.dp))
-            Text(
+            AutoSizeText(
                 text = MoneyFormatter.format(animatedCents.toLong()),
                 style = MaterialTheme.typography.displayLarge,
                 color = if (isNegative) FinanceTheme.colors.expense else FinanceTheme.colors.income,
-                modifier = Modifier.semantics {
-                    contentDescription = spokenBalance(state.balanceCents)
-                }
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics {
+                        contentDescription = spokenBalance(state.balanceCents)
+                    }
             )
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {

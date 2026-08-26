@@ -30,6 +30,10 @@ class TransactionRepository @Inject constructor(
     fun observeByMonth(yearMonth: Int): Flow<List<Transaction>> =
         dao.observeByMonth(yearMonth).map { list -> list.map { it.toDomain() } }.distinctUntilChanged()
 
+    /** Busca por descrição em todos os meses — usada pela busca da tela de Transações. */
+    fun search(query: String): Flow<List<Transaction>> =
+        dao.search(query).map { list -> list.map { it.toDomain() } }.distinctUntilChanged()
+
     fun observeMonthlySummary(yearMonth: Int): Flow<MonthlySummary> =
         dao.observeMonthlySummary(yearMonth).map { rows ->
             val income = rows.firstOrNull { it.type == TransactionType.INCOME.name }?.total ?: 0L
@@ -90,6 +94,32 @@ class TransactionRepository @Inject constructor(
         note = null
     )
 
+    /** Cria o lançamento de pagamento de uma conta fixa (`:feature:recurring`) — liga o lançamento à regra via `recurrenceGroupId`. */
+    suspend fun createRecurring(
+        amountCents: Long,
+        type: TransactionType,
+        description: String,
+        categoryId: String,
+        accountId: String,
+        occurredAt: Long,
+        recurringRuleId: String
+    ): String = insert(
+        amountCents = amountCents,
+        type = type,
+        description = description,
+        rawInput = null,
+        categoryId = categoryId,
+        accountId = accountId,
+        occurredAt = occurredAt,
+        paymentMethod = null,
+        source = EntrySource.RECURRING,
+        confidence = null,
+        needsReview = false,
+        note = null,
+        isRecurring = true,
+        recurrenceGroupId = recurringRuleId
+    )
+
     private suspend fun insert(
         amountCents: Long,
         type: TransactionType,
@@ -102,7 +132,9 @@ class TransactionRepository @Inject constructor(
         source: EntrySource,
         confidence: Float?,
         needsReview: Boolean,
-        note: String?
+        note: String?,
+        isRecurring: Boolean = false,
+        recurrenceGroupId: String? = null
     ): String {
         val id = UUID.randomUUID().toString()
         val transaction = Transaction(
@@ -119,7 +151,9 @@ class TransactionRepository @Inject constructor(
             source = source,
             confidence = confidence,
             needsReview = needsReview,
-            note = note
+            note = note,
+            isRecurring = isRecurring,
+            recurrenceGroupId = recurrenceGroupId
         )
         dao.insert(transaction.toEntity(
             yearMonth = YearMonthUtils.yearMonthOf(occurredAt),

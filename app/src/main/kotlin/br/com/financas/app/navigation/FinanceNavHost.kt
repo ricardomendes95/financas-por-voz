@@ -12,6 +12,7 @@ import androidx.navigation.compose.rememberNavController
 import br.com.financas.core.common.DeepLinks
 import br.com.financas.feature.budgets.BudgetsScreen
 import br.com.financas.feature.dashboard.DashboardScreen
+import br.com.financas.feature.recurring.RecurringScreen
 import br.com.financas.feature.reports.ReportsScreen
 import br.com.financas.feature.reports.closing.MonthClosingScreen
 import br.com.financas.feature.settings.SettingsScreen
@@ -46,7 +47,8 @@ fun FinanceNavHost(
                 onSeeAllTransactions = { navController.navigate(Transactions) },
                 onOpenSettings = { navController.navigate(Settings) },
                 onOpenReports = { navController.navigate(Reports) },
-                onOpenBudgets = { navController.navigate(Budgets) }
+                onOpenBudgets = { navController.navigate(Budgets) },
+                onOpenRecurring = { navController.navigate(Recurring) }
             )
         }
         composable<Settings> {
@@ -72,6 +74,12 @@ fun FinanceNavHost(
         }
         composable<Budgets> {
             BudgetsScreen(onBack = { navController.popBackStack() })
+        }
+        composable<Recurring> {
+            RecurringScreen(
+                onBack = { navController.popBackStack() },
+                onEditPaidTransaction = { id -> navController.navigate(EditTransaction(id)) }
+            )
         }
         composable<MonthClosing> {
             MonthClosingScreen(onBack = { navController.popBackStack() })

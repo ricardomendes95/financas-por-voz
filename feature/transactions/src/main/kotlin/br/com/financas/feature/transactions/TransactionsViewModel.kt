@@ -11,6 +11,8 @@ import br.com.financas.core.model.Transaction
 import br.com.financas.core.model.TransactionListItem
 import br.com.financas.core.model.TransactionType
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,6 +36,7 @@ class TransactionsViewModel @Inject constructor(
 
     private val selectedYearMonth = MutableStateFlow(YearMonthUtils.currentYearMonth(zone))
     private val typeFilter = MutableStateFlow(TypeFilter.ALL)
+    private val searchQuery = MutableStateFlow("")
 
     fun onPreviousMonth() {
         selectedYearMonth.update { YearMonthUtils.plusMonths(it, -1) }
@@ -47,12 +50,26 @@ class TransactionsViewModel @Inject constructor(
         typeFilter.update { filter }
     }
 
+    fun onSearchQueryChange(query: String) {
+        searchQuery.update { query }
+    }
+
+    // Com busca ativa, os lançamentos vêm de todos os meses (não só do selecionado) —
+    // é assim que dá pra achar "os fies" de vários meses digitando o nome uma vez.
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private val transactionsSource: Flow<List<Transaction>> =
+        combine(selectedYearMonth, searchQuery) { yearMonth, query -> yearMonth to query }
+            .flatMapLatest { (yearMonth, query) ->
+                if (query.isBlank()) transactionRepository.observeByMonth(yearMonth) else transactionRepository.search(query)
+            }
+
     val uiState: StateFlow<TransactionsUiState> = combine(
-        selectedYearMonth.flatMapLatest(transactionRepository::observeByMonth),
+        transactionsSource,
         categoryRepository.observeActive(),
         selectedYearMonth,
-        typeFilter
-    ) { transactions, categories, yearMonth, filter ->
+        typeFilter,
+        searchQuery
+    ) { transactions, categories, yearMonth, filter, query ->
         val categoryById = categories.associateBy(Category::id)
         val filtered = transactions.filter { filter.type == null || it.type == filter.type }
         val items = filtered.map { it.toListItem(categoryById) }
@@ -65,6 +82,7 @@ class TransactionsViewModel @Inject constructor(
             monthLabel = YearMonthUtils.fullMonthLabel(yearMonth),
             typeFilter = filter,
             totalCents = total,
+            searchQuery = query,
             isLoading = false
         )
     }
