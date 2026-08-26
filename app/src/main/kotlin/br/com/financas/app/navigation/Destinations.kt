@@ -31,3 +31,6 @@ data object BankAllowlist
 
 @Serializable
 data object ImportStatement
+
+@Serializable
+data object Categories

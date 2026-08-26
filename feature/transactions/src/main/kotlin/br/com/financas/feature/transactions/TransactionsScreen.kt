@@ -70,7 +70,10 @@ fun TransactionsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            contentPadding = PaddingValues(16.dp),
+            // bottom maior que o resto: o Scaffold não reserva espaço pro FAB
+            // sozinho, então sem isso o último item da lista fica escondido
+            // atrás dele.
+            contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 96.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             item(key = "month_selector") {

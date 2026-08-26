@@ -45,7 +45,7 @@ class InsightEngineTest {
         db.categoryDao().insertAll(CategorySeeder.categoryEntities())
         db.categoryRuleDao().insertAll(CategorySeeder.categoryRuleEntities())
 
-        val categoryRepository = CategoryRepository(db.categoryDao(), db.categoryRuleDao())
+        val categoryRepository = CategoryRepository(db.categoryDao(), db.categoryRuleDao(), clock)
         val budgetRepository = BudgetRepository(db.budgetDao())
         engine = InsightEngine(db.transactionDao(), categoryRepository, budgetRepository, clock)
     }

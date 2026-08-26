@@ -34,6 +34,23 @@ class BankMessageParserTest {
     }
 
     @Test
+    fun `transferencia recebida sem mencionar pix gera receita`() {
+        // Formato real do Nubank: "Recebemos sua transferência de R$ X,XX."
+        val result = BankMessageParser.parse("Recebemos sua transferência de R\$ 1.400,00.")
+        assertNotNull(result)
+        assertEquals(140_000L, result!!.amountCents)
+        assertEquals(TransactionType.INCOME, result.type)
+    }
+
+    @Test
+    fun `transferencia enviada sem mencionar pix gera despesa`() {
+        val result = BankMessageParser.parse("Transferência enviada: R\$ 50,00 para Fulano de Tal")
+        assertNotNull(result)
+        assertEquals(5_000L, result!!.amountCents)
+        assertEquals(TransactionType.EXPENSE, result.type)
+    }
+
+    @Test
     fun `debito generico`() {
         val result = BankMessageParser.parse("Débito de R\$ 32,80 em FARMACIA DROGASIL")
         assertNotNull(result)

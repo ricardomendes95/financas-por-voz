@@ -15,6 +15,7 @@ import br.com.financas.feature.dashboard.DashboardScreen
 import br.com.financas.feature.reports.ReportsScreen
 import br.com.financas.feature.reports.closing.MonthClosingScreen
 import br.com.financas.feature.settings.SettingsScreen
+import br.com.financas.feature.settings.category.CategoriesScreen
 import br.com.financas.feature.settings.statement.ImportStatementScreen
 import br.com.financas.feature.transactions.AddEditTransactionScreen
 import br.com.financas.feature.transactions.TransactionsScreen
@@ -53,7 +54,8 @@ fun FinanceNavHost(
                 onBack = { navController.popBackStack() },
                 onOpenMonthClosing = { navController.navigate(MonthClosing) },
                 onOpenBankAllowlist = { navController.navigate(BankAllowlist) },
-                onOpenImportStatement = { navController.navigate(ImportStatement) }
+                onOpenImportStatement = { navController.navigate(ImportStatement) },
+                onOpenCategories = { navController.navigate(Categories) }
             )
         }
         composable<BankAllowlist> {
@@ -61,6 +63,9 @@ fun FinanceNavHost(
         }
         composable<ImportStatement> {
             ImportStatementScreen(onBack = { navController.popBackStack() })
+        }
+        composable<Categories> {
+            CategoriesScreen(onBack = { navController.popBackStack() })
         }
         composable<Reports> {
             ReportsScreen(onBack = { navController.popBackStack() })

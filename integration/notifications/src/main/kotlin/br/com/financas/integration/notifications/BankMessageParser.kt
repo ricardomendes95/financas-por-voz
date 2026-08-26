@@ -25,6 +25,18 @@ object BankMessageParser {
         RegexOption.IGNORE_CASE
     )
 
+    // Muitos bancos (ex.: Nubank) notificam transferência recebida/enviada
+    // sem citar "pix" em nenhum ponto do texto — ex.: "Recebemos sua
+    // transferência de R$ 1.400,00." ou "Transferência enviada".
+    private val TRANSFER_RECEIVED = Regex(
+        """(?:transfer[êe]ncia\s+recebida|recebemos\s+sua\s+transfer[êe]ncia).*?R\$\s*([\d.,]+)""",
+        RegexOption.IGNORE_CASE
+    )
+    private val TRANSFER_SENT = Regex(
+        """(?:transfer[êe]ncia\s+enviada|enviamos\s+sua\s+transfer[êe]ncia).*?R\$\s*([\d.,]+)""",
+        RegexOption.IGNORE_CASE
+    )
+
     private val DEBIT = Regex(
         """(?:d[ée]bito|debitado).*?R\$\s*([\d.,]+)\s*(?:em|no|na)?\s*(.+?)?(?:[.\n]|$)""",
         RegexOption.IGNORE_CASE
@@ -44,6 +56,16 @@ object BankMessageParser {
                 TransactionType.EXPENSE
             }
             return BankMessageResult(cents, type, "Pix")
+        }
+
+        TRANSFER_RECEIVED.find(text)?.let { match ->
+            val cents = parseAmount(match.groupValues[1]) ?: return@let
+            return BankMessageResult(cents, TransactionType.INCOME, "Transferência")
+        }
+
+        TRANSFER_SENT.find(text)?.let { match ->
+            val cents = parseAmount(match.groupValues[1]) ?: return@let
+            return BankMessageResult(cents, TransactionType.EXPENSE, "Transferência")
         }
 
         DEBIT.find(text)?.let { match ->

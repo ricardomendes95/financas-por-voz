@@ -7,6 +7,22 @@
     <string name="settings_shortcut_section">Atalho sem conflito com o Gemini</string>
     <string name="settings_shortcut_hint">Mapeie o duplo toque na traseira (Recursos avançados → Movimentos e gestos) ou um botão do fone Bluetooth para abrir a captura por voz, sem mexer no assistente padrão.</string>
     <string name="settings_shortcut_test">Testar captura por voz</string>
+    <string name="settings_categories_section">Categorias</string>
+    <string name="settings_categories_hint">Crie categorias próprias para entradas e saídas, além das que já existem.</string>
+    <string name="settings_categories_button">Gerenciar categorias</string>
+
+    <string name="categories_title">Categorias</string>
+    <string name="categories_new">Nova categoria</string>
+    <string name="categories_name">Nome</string>
+    <string name="categories_icon">Ícone</string>
+    <string name="categories_color">Cor</string>
+    <string name="categories_type_expense">Despesa</string>
+    <string name="categories_type_income">Receita</string>
+    <string name="categories_type_both">Ambas</string>
+    <string name="categories_save">Criar</string>
+    <string name="categories_cancel">Cancelar</string>
+    <string name="categories_archive">Arquivar categoria</string>
+
     <string name="settings_import_section">Importar extrato do banco</string>
     <string name="settings_import_hint">Importe um CSV exportado do seu banco. Cada lançamento vem com categoria sugerida — você revisa e escolhe o que entra antes de confirmar.</string>
     <string name="settings_import_button">Importar extrato</string>

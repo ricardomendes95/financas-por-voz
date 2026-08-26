@@ -125,7 +125,10 @@ private fun DashboardContent(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding),
-            contentPadding = PaddingValues(16.dp),
+            // bottom maior: o Scaffold não reserva espaço pros FABs sozinho, e
+            // aqui são dois empilhados (mic + Adicionar) — sem isso os
+            // últimos itens da lista ficam escondidos atrás deles.
+            contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 160.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item(key = "balance_card") { BalanceCard(state) }

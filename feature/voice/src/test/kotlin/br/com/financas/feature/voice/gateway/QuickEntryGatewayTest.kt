@@ -37,7 +37,7 @@ class QuickEntryGatewayTest {
             .build()
         val clock = Clock.fixed(Instant.parse("2026-08-25T14:30:00Z"), ZoneOffset.UTC)
         val transactionRepository = TransactionRepository(db.transactionDao(), clock)
-        val categoryRepository = CategoryRepository(db.categoryDao(), db.categoryRuleDao())
+        val categoryRepository = CategoryRepository(db.categoryDao(), db.categoryRuleDao(), clock)
         val categoryRuleRepository = CategoryRuleRepository(db.categoryRuleDao(), clock)
         val accountRepository = AccountRepository(db.accountDao())
         gateway = QuickEntryGateway(

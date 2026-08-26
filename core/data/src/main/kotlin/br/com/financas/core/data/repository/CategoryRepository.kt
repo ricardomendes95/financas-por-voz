@@ -10,13 +10,16 @@ import br.com.financas.core.model.TransactionType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import java.time.Clock
+import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class CategoryRepository @Inject constructor(
     private val categoryDao: CategoryDao,
-    private val categoryRuleDao: CategoryRuleDao
+    private val categoryRuleDao: CategoryRuleDao,
+    private val clock: Clock
 ) {
 
     fun observeActive(): Flow<List<Category>> =
@@ -26,14 +29,25 @@ class CategoryRepository @Inject constructor(
 
     /** Cria uma categoria de despesa definida pelo usuário (§5.2, `createCategory`). */
     suspend fun createUserCategory(id: String, name: String) {
+        createCategory(name = name, type = TransactionType.EXPENSE, id = id)
+    }
+
+    /** Categoria personalizada criada pelo usuário — nome, tipo, ícone e cor à escolha. */
+    suspend fun createCategory(
+        name: String,
+        type: TransactionType?,
+        icon: String = "more_horiz",
+        colorArgb: Int = 0xFF94A3B8.toInt(),
+        id: String = UUID.randomUUID().toString()
+    ): String {
         categoryDao.insertAll(
             listOf(
                 CategoryEntity(
                     id = id,
                     name = name,
-                    icon = "more_horiz",
-                    colorArgb = 0xFF94A3B8.toInt(),
-                    type = TransactionType.EXPENSE,
+                    icon = icon,
+                    colorArgb = colorArgb,
+                    type = type,
                     parentId = null,
                     isSystem = false,
                     sortOrder = 100,
@@ -41,6 +55,14 @@ class CategoryRepository @Inject constructor(
                 )
             )
         )
+        return id
+    }
+
+    /** Categorias de sistema não podem ser arquivadas — evita órfãos silenciosos em lançamentos antigos e regras já treinadas. */
+    suspend fun archiveCategory(id: String) {
+        val category = getById(id) ?: return
+        if (category.isSystem) return
+        categoryDao.archive(id, clock.millis())
     }
 
     /** Roda uma vez no primeiro boot — fora do `Application.onCreate` (regra §6). */

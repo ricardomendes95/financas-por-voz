@@ -46,6 +46,7 @@ fun SettingsScreen(
     onOpenMonthClosing: () -> Unit,
     onOpenBankAllowlist: () -> Unit,
     onOpenImportStatement: () -> Unit,
+    onOpenCategories: () -> Unit,
     modifier: Modifier = Modifier,
     backupViewModel: BackupViewModel = hiltViewModel()
 ) {
@@ -156,6 +157,22 @@ fun SettingsScreen(
                             )
                         }) {
                             Text(stringResource(R.string.settings_shortcut_test))
+                        }
+                    }
+                }
+            }
+
+            item {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(stringResource(R.string.settings_categories_section), style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            stringResource(R.string.settings_categories_hint),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        OutlinedButton(onClick = onOpenCategories) {
+                            Text(stringResource(R.string.settings_categories_button))
                         }
                     }
                 }
