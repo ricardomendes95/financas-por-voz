@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="reports_title">Relatórios</string>
+    <string name="reports_tab_overview">Visão Geral</string>
+    <string name="reports_tab_categories">Categorias</string>
+    <string name="reports_tab_evolution">Evolução</string>
+    <string name="reports_tab_compare">Comparar</string>
+    <string name="reports_tab_yearly">Anual</string>
+    <string name="reports_menu">Trocar de aba</string>
+    <string name="reports_previous_month">Mês anterior</string>
+    <string name="reports_next_month">Próximo mês</string>
+    <string name="reports_previous_year">Ano anterior</string>
+    <string name="reports_next_year">Próximo ano</string>
+    <string name="reports_yearly_categories">Gastos por categoria no ano</string>
+    <string name="reports_yearly_compare">Comparação com %1$s</string>
+    <string name="reports_max_expense">Maior gasto</string>
+    <string name="reports_average_daily">Média diária</string>
+    <string name="reports_no_spend_days">Dias sem gastar</string>
+    <string name="reports_projected">Projeção do mês</string>
+    <string name="reports_weekday_distribution">Distribuição por dia da semana</string>
+    <string name="reports_payment_distribution">Distribuição por forma de pagamento</string>
+    <string name="reports_payment_unknown">Não informado</string>
+    <string name="reports_income">Entradas</string>
+    <string name="reports_expense">Saídas</string>
+    <string name="reports_compare_category">Categoria</string>
+
+    <string name="closing_title">Fechamento — %1$s</string>
+    <string name="closing_income">Entrou</string>
+    <string name="closing_expense">Saiu</string>
+    <string name="closing_balance">Sobrou %1$s</string>
+    <string name="closing_savings_rate">Taxa de poupança: %1$d%%</string>
+    <string name="closing_vs_last_month">%1$s%% vs. mês anterior</string>
+    <string name="closing_top_categories">Top 3 categorias</string>
+    <string name="closing_opportunities">Onde deu pra economizar</string>
+    <string name="closing_export_csv">Exportar CSV</string>
+</resources>

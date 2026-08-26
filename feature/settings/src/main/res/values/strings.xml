@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="settings_title">Configurações</string>
+    <string name="settings_voice_section">Assistente do sistema</string>
+    <string name="settings_assistant_warning">Isso substituirá o Gemini ao segurar o botão lateral. Você pode reverter a qualquer momento em Configurações do sistema.</string>
+    <string name="settings_assistant_button">Abrir configurações de assistente de voz</string>
+    <string name="settings_shortcut_section">Atalho sem conflito com o Gemini</string>
+    <string name="settings_shortcut_hint">Mapeie o duplo toque na traseira (Recursos avançados → Movimentos e gestos) ou um botão do fone Bluetooth para abrir a captura por voz, sem mexer no assistente padrão.</string>
+    <string name="settings_shortcut_test">Testar captura por voz</string>
+    <string name="settings_import_section">Importar extrato do banco</string>
+    <string name="settings_import_hint">Importe um CSV exportado do seu banco. Cada lançamento vem com categoria sugerida — você revisa e escolhe o que entra antes de confirmar.</string>
+    <string name="settings_import_button">Importar extrato</string>
+
+    <string name="import_statement_title">Importar extrato</string>
+    <string name="import_statement_hint">Escolha o arquivo CSV exportado do seu banco.</string>
+    <string name="import_statement_pick_file">Escolher arquivo</string>
+    <string name="import_statement_selected_count">%1$d de %2$d selecionados</string>
+    <string name="import_statement_confirm">Importar %1$d lançamentos</string>
+    <string name="import_statement_already_imported">já importado</string>
+    <string name="import_statement_done">%1$d lançamentos importados.</string>
+    <string name="import_statement_done_confirm">OK</string>
+
+    <string name="settings_backup_section">Backup</string>
+    <string name="settings_backup_hint">Exporte todos os seus dados para um arquivo, ou restaure a partir de um backup anterior. A restauração substitui tudo que está no app agora.</string>
+    <string name="settings_backup_export">Exportar backup</string>
+    <string name="settings_backup_import">Restaurar backup</string>
+    <string name="settings_backup_export_success">Backup exportado com sucesso.</string>
+    <string name="settings_backup_export_failed">Não foi possível exportar o backup.</string>
+    <string name="settings_backup_import_success">Backup restaurado. Reabrindo o app…</string>
+    <string name="settings_backup_import_failed">Não foi possível restaurar o backup.</string>
+    <string name="settings_backup_import_confirm_title">Restaurar backup?</string>
+    <string name="settings_backup_import_confirm_message">Todos os dados atuais do app serão substituídos pelos dados desse arquivo. Essa ação não pode ser desfeita.</string>
+    <string name="settings_backup_import_confirm">Restaurar</string>
+    <string name="settings_backup_import_cancel">Cancelar</string>
+    <string name="settings_closing_section">Fechamento mensal</string>
+    <string name="settings_closing_button">Ver resumo do mês anterior</string>
+    <string name="settings_bank_section">Notificações do banco</string>
+    <string name="settings_bank_button">Configurar bancos</string>
+    <string name="settings_about_section">Sobre</string>
+    <string name="settings_about_body">Este app funciona 100% offline. Nenhum dado sai do seu aparelho.</string>
+</resources>

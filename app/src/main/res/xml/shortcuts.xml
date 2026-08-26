@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Rota 2 (§5.3) — legado, mas cobre dispositivos que ainda não migraram
+         para o Gemini. O Assistant entrega o texto dito como o extra "text". -->
+    <capability android:name="custom.actions.intent.ADD_EXPENSE">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="br.com.financas.app"
+            android:targetClass="br.com.financas.app.deeplink.DeepLinkActivity">
+            <parameter android:name="expense.text" android:key="text" android:required="true" />
+        </intent>
+    </capability>
+
+    <shortcut
+        android:shortcutId="quick_voice_capture"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_voice"
+        android:shortcutShortLabel="@string/sc_voice_short"
+        android:shortcutLongLabel="@string/sc_voice_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="br.com.financas.app"
+            android:targetClass="br.com.financas.feature.voice.capture.VoiceCaptureActivity" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="quick_add_expense"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_expense"
+        android:shortcutShortLabel="@string/sc_expense_short"
+        android:shortcutLongLabel="@string/sc_expense_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="br.com.financas.app"
+            android:targetClass="br.com.financas.app.deeplink.DeepLinkActivity"
+            android:data="financas://add?type=expense" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="quick_add_income"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_income"
+        android:shortcutShortLabel="@string/sc_income_short"
+        android:shortcutLongLabel="@string/sc_income_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="br.com.financas.app"
+            android:targetClass="br.com.financas.app.deeplink.DeepLinkActivity"
+            android:data="financas://add?type=income" />
+    </shortcut>
+
+</shortcuts>

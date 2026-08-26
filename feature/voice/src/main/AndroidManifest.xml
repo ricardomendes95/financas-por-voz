@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <permission
+        android:name="br.com.financas.permission.INGEST"
+        android:protectionLevel="signature" />
+
+    <application>
+        <activity
+            android:name=".capture.VoiceCaptureActivity"
+            android:theme="@style/Theme.Financas.Transparent"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTask">
+            <intent-filter>
+                <action android:name="android.intent.action.ASSIST" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter android:autoVerify="false">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="financas" android:host="capture" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".external.ProcessTextActivity"
+            android:theme="@style/Theme.Financas.Transparent"
+            android:excludeFromRecents="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.PROCESS_TEXT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name=".notification.QuickEntryBroadcastReceiver"
+            android:exported="false" />
+
+        <receiver
+            android:name=".external.ExternalIngestReceiver"
+            android:exported="true"
+            android:permission="br.com.financas.permission.INGEST">
+            <intent-filter>
+                <action android:name="br.com.financas.ACTION_INGEST" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name=".assistant.FinanceVoiceInteractionService"
+            android:label="@string/voice_assistant_service_label"
+            android:permission="android.permission.BIND_VOICE_INTERACTION"
+            android:exported="true">
+            <meta-data
+                android:name="android.voice_interaction"
+                android:resource="@xml/voice_interaction_service" />
+            <intent-filter>
+                <action android:name="android.service.voice.VoiceInteractionService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".assistant.FinanceVoiceInteractionSessionService"
+            android:permission="android.permission.BIND_VOICE_INTERACTION"
+            android:exported="true" />
+
+        <service
+            android:name=".tile.VoiceEntryTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile_mic"
+            android:label="@string/voice_tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+    </application>
+
+</manifest>

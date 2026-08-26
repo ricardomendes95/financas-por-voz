@@ -1,0 +1,16 @@
+*.iml
+.gradle/
+.kotlin/
+.claude/
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+local.properties
+.idea/
+.DS_Store
+
+# Extratos bancários reais usados como exemplo local para o parser de importação —
+# nunca devem ser versionados (dados financeiros e pessoais reais).
+docs/*.csv
+docs/*.ofx

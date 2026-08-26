@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="bank_allowlist_title">Notificações do banco</string>
+    <string name="bank_allowlist_explanation">Para sugerir lançamentos a partir das notificações do seu banco. Nada é enviado para fora do celular — cada notificação vira uma sugestão pendente, nunca um lançamento automático.</string>
+    <string name="bank_allowlist_grant_access">Conceder acesso às notificações</string>
+</resources>

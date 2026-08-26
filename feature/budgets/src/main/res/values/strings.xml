@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="budgets_title">Orçamentos</string>
+    <string name="budgets_copy_previous">Copiar do mês anterior</string>
+    <string name="budgets_general">Orçamento geral do mês</string>
+    <string name="budgets_limit">Limite</string>
+    <string name="budgets_rollover">Sobra do mês anterior acumula</string>
+    <string name="budgets_spent_so_far">Gasto até agora: %1$s</string>
+    <string name="budgets_suggestion">Sugestão: %1$s</string>
+    <string name="budgets_save">Salvar</string>
+</resources>

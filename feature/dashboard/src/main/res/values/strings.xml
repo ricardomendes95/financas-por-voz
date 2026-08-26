@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="dashboard_add_transaction">Adicionar</string>
+    <string name="dashboard_voice_capture">Lançar por voz</string>
+    <string name="dashboard_recent_transactions">Últimos lançamentos</string>
+    <string name="dashboard_see_all">Ver todos</string>
+    <string name="dashboard_month_balance">Saldo do mês</string>
+    <string name="dashboard_empty_state">Nenhum gasto ainda. Toque em Adicionar e diga seu primeiro gasto.</string>
+    <string name="dashboard_settings">Configurações</string>
+    <string name="dashboard_reports">Relatórios</string>
+    <string name="dashboard_budget">Orçamento do mês</string>
+    <string name="dashboard_pending">%1$d pendentes do banco</string>
+    <string name="dashboard_confirm">CONFIRMAR</string>
+    <string name="dashboard_ignore">IGNORAR</string>
+</resources>

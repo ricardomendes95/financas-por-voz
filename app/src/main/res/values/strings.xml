@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Finanças</string>
+    <string name="sc_voice_short">Falar gasto</string>
+    <string name="sc_voice_long">Lançar por voz</string>
+    <string name="sc_expense_short">Nova despesa</string>
+    <string name="sc_expense_long">Adicionar despesa</string>
+    <string name="sc_income_short">Nova receita</string>
+    <string name="sc_income_long">Adicionar receita</string>
+</resources>
