@@ -44,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import br.com.financas.core.common.MoneyFormatter
 import br.com.financas.core.designsystem.component.CategoryIcons
 import br.com.financas.core.designsystem.theme.FinanceTheme
+import br.com.financas.core.designsystem.tour.tourTarget
 import br.com.financas.feature.reports.component.DonutChart
 import br.com.financas.feature.reports.component.DualLineChart
 import br.com.financas.feature.reports.component.SimpleBarChart
@@ -69,7 +70,10 @@ fun ReportsScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { menuExpanded = true }) {
+                    IconButton(
+                        onClick = { menuExpanded = true },
+                        modifier = Modifier.tourTarget("reports_tab_menu")
+                    ) {
                         Icon(Icons.Filled.Menu, contentDescription = stringResource(R.string.reports_menu))
                     }
                     DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {

@@ -4,12 +4,17 @@ import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import br.com.financas.core.common.DeepLinks
+import br.com.financas.core.data.tour.TourController
+import br.com.financas.core.data.tour.TourStep
 import br.com.financas.feature.budgets.BudgetsScreen
 import br.com.financas.feature.dashboard.DashboardScreen
 import br.com.financas.feature.recurring.RecurringScreen
@@ -24,6 +29,7 @@ import br.com.financas.integration.notifications.BankAllowlistScreen
 
 @Composable
 fun FinanceNavHost(
+    tourController: TourController,
     deepLinkUri: Uri? = null,
     navController: NavHostController = rememberNavController()
 ) {
@@ -32,6 +38,27 @@ fun FinanceNavHost(
     LaunchedEffect(deepLinkUri) {
         val route = deepLinkUri?.toDestination() ?: return@LaunchedEffect
         navController.navigate(route)
+    }
+
+    // Dirige a navegação durante o tour guiado — o usuário nunca precisa tocar em nada
+    // para ir de uma tela a outra enquanto os passos avançam.
+    val tourStep by tourController.currentStep.collectAsState()
+    LaunchedEffect(tourStep) {
+        val step = tourStep ?: return@LaunchedEffect
+        val current = navController.currentBackStackEntry?.destination
+        val alreadyThere = when (step.screenId) {
+            "dashboard" -> current?.hasRoute<Dashboard>() == true
+            "settings" -> current?.hasRoute<Settings>() == true
+            "reports" -> current?.hasRoute<Reports>() == true
+            else -> true
+        }
+        if (!alreadyThere) {
+            when (step.screenId) {
+                "dashboard" -> navController.navigate(Dashboard)
+                "settings" -> navController.navigate(Settings)
+                "reports" -> navController.navigate(Reports)
+            }
+        }
     }
 
     NavHost(navController = navController, startDestination = Dashboard) {
@@ -58,7 +85,9 @@ fun FinanceNavHost(
                 onOpenMonthClosing = { navController.navigate(MonthClosing) },
                 onOpenBankAllowlist = { navController.navigate(BankAllowlist) },
                 onOpenImportStatement = { navController.navigate(ImportStatement) },
-                onOpenCategories = { navController.navigate(Categories) }
+                onOpenCategories = { navController.navigate(Categories) },
+                onReplayTour = tourController::start,
+                tourStep = tourStep
             )
         }
         composable<BankAllowlist> {

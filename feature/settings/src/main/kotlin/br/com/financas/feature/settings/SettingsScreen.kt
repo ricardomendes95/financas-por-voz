@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
@@ -41,7 +42,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import br.com.financas.core.common.DeepLinks
+import br.com.financas.core.data.tour.TourStep
+import br.com.financas.core.designsystem.tour.tourTarget
 import java.time.LocalDate
+
+// Índice de cada Card dentro do LazyColumn abaixo — usado só para rolar até o card
+// certo quando o tour guiado chega num passo desta tela. Se a ordem dos `item { }`
+// mudar, estes valores precisam ser atualizados junto.
+private const val SETTINGS_CATEGORIES_ITEM_INDEX = 2
+private const val SETTINGS_IMPORT_ITEM_INDEX = 3
+private const val SETTINGS_BANK_ITEM_INDEX = 6
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -51,12 +61,25 @@ fun SettingsScreen(
     onOpenBankAllowlist: () -> Unit,
     onOpenImportStatement: () -> Unit,
     onOpenCategories: () -> Unit,
+    onReplayTour: () -> Unit,
+    tourStep: TourStep?,
     modifier: Modifier = Modifier,
     backupViewModel: BackupViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
     var pendingImportUri by remember { mutableStateOf<Uri?>(null) }
     val autoBackupEnabled by backupViewModel.autoBackupEnabled.collectAsState()
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(tourStep) {
+        val targetIndex = when (tourStep?.targetId) {
+            "settings_categories_card" -> SETTINGS_CATEGORIES_ITEM_INDEX
+            "settings_import_card" -> SETTINGS_IMPORT_ITEM_INDEX
+            "settings_bank_card" -> SETTINGS_BANK_ITEM_INDEX
+            else -> null
+        }
+        targetIndex?.let { listState.animateScrollToItem(it) }
+    }
 
     val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
         if (uri != null) {
@@ -125,6 +148,7 @@ fun SettingsScreen(
         }
     ) { padding ->
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(padding)
@@ -168,7 +192,7 @@ fun SettingsScreen(
             }
 
             item {
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(modifier = Modifier.fillMaxWidth().tourTarget("settings_categories_card")) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(stringResource(R.string.settings_categories_section), style = MaterialTheme.typography.titleLarge)
                         Text(
@@ -184,7 +208,7 @@ fun SettingsScreen(
             }
 
             item {
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(modifier = Modifier.fillMaxWidth().tourTarget("settings_import_card")) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(stringResource(R.string.settings_import_section), style = MaterialTheme.typography.titleLarge)
                         Text(
@@ -246,11 +270,27 @@ fun SettingsScreen(
             }
 
             item {
-                Card(modifier = Modifier.fillMaxWidth()) {
+                Card(modifier = Modifier.fillMaxWidth().tourTarget("settings_bank_card")) {
                     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(stringResource(R.string.settings_bank_section), style = MaterialTheme.typography.titleLarge)
                         OutlinedButton(onClick = onOpenBankAllowlist) {
                             Text(stringResource(R.string.settings_bank_button))
+                        }
+                    }
+                }
+            }
+
+            item {
+                Card(modifier = Modifier.fillMaxWidth()) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(stringResource(R.string.settings_tour_section), style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            stringResource(R.string.settings_tour_hint),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        OutlinedButton(onClick = onReplayTour) {
+                            Text(stringResource(R.string.settings_tour_button))
                         }
                     }
                 }

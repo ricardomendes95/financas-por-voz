@@ -10,4 +10,9 @@
     <string name="corrupted_backup_title">Cópia de segurança com problema</string>
     <string name="corrupted_backup_message">Encontramos uma cópia de segurança automática ao instalar o app, mas ela parece corrompida. Se ainda tiver acesso ao aparelho antigo, abra o app lá e use \"Exportar backup\" em Configurações antes de continuar aqui — assim você não perde o histórico. Se preferir, pode continuar com uma base de dados nova.</string>
     <string name="corrupted_backup_continue">Continuar com dados novos</string>
+    <string name="tour_dashboard_add">Toque aqui para lançar uma despesa ou receita manualmente. Ou use o microfone ao lado para lançar por voz.</string>
+    <string name="tour_settings_bank">Autorize aqui quais bancos podem sugerir lançamentos a partir das notificações — nada é lançado sozinho, você sempre confirma antes.</string>
+    <string name="tour_settings_categories">Crie categorias personalizadas além das que já vêm prontas.</string>
+    <string name="tour_settings_import">Importe um extrato CSV do banco para lançar várias transações de uma vez.</string>
+    <string name="tour_reports_menu">Toque aqui para alternar entre Visão geral, Categorias, Evolução e as outras abas dos relatórios.</string>
 </resources>

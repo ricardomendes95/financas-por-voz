@@ -46,6 +46,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import br.com.financas.core.common.MoneyFormatter
 import br.com.financas.core.designsystem.component.AutoSizeText
 import br.com.financas.core.designsystem.component.MoneyText
+import br.com.financas.core.designsystem.tour.tourTarget
 import br.com.financas.core.model.Insight
 import br.com.financas.core.designsystem.component.TransactionRow
 import br.com.financas.core.designsystem.theme.FinanceTheme
@@ -127,7 +128,8 @@ private fun DashboardContent(
                 ExtendedFloatingActionButton(
                     onClick = onAddTransaction,
                     icon = { Icon(Icons.Filled.Add, contentDescription = null) },
-                    text = { Text(stringResource(R.string.dashboard_add_transaction)) }
+                    text = { Text(stringResource(R.string.dashboard_add_transaction)) },
+                    modifier = Modifier.tourTarget("dashboard_add_fab")
                 )
             }
         }

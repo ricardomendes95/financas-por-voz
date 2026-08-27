@@ -6,8 +6,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -15,13 +17,21 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import br.com.financas.app.backup.CorruptedBackupScreen
 import br.com.financas.app.navigation.FinanceNavHost
+import br.com.financas.app.tour.tourMessage
 import br.com.financas.core.common.DeepLinks
 import br.com.financas.core.data.backup.DatabaseIntegrityChecker
+import br.com.financas.core.data.tour.TourController
+import br.com.financas.core.data.tour.TourPreferences
+import br.com.financas.core.data.tour.TourStep
 import br.com.financas.core.designsystem.theme.FinancasTheme
+import br.com.financas.core.designsystem.tour.TourOverlay
+import br.com.financas.core.designsystem.tour.TourTargetRegistry
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 private sealed interface BootState {
     data object Checking : BootState
@@ -31,6 +41,9 @@ private sealed interface BootState {
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject lateinit var tourController: TourController
+    @Inject lateinit var tourPreferences: TourPreferences
 
     private var pendingDeepLink by mutableStateOf<Uri?>(null)
     private var bootState by mutableStateOf<BootState>(BootState.Checking)
@@ -47,7 +60,22 @@ class MainActivity : ComponentActivity() {
                     when (bootState) {
                         BootState.Checking -> Unit
                         BootState.CorruptedBackup -> CorruptedBackupScreen(onContinueAnyway = ::discardAndContinue)
-                        BootState.Ready -> FinanceNavHost(deepLinkUri = pendingDeepLink)
+                        BootState.Ready -> {
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                FinanceNavHost(tourController = tourController, deepLinkUri = pendingDeepLink)
+
+                                val tourStep by tourController.currentStep.collectAsState()
+                                tourStep?.let { step ->
+                                    TourOverlay(
+                                        targetRect = TourTargetRegistry.get(step.targetId),
+                                        message = tourMessage(step),
+                                        isLastStep = step == TourStep.entries.last(),
+                                        onNext = tourController::next,
+                                        onSkip = tourController::skip
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -90,7 +118,7 @@ class MainActivity : ComponentActivity() {
                 return@launch
             }
             bootState = BootState.Ready
-            launchVoiceCaptureIfColdStart()
+            startTourOrVoiceCapture()
         }
     }
 
@@ -98,7 +126,18 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             withContext(Dispatchers.IO) { DatabaseIntegrityChecker.discard(applicationContext) }
             bootState = BootState.Ready
+            startTourOrVoiceCapture()
+        }
+    }
+
+    // Na primeiríssima abertura do app, o tour guiado tem prioridade sobre a captura de
+    // voz automática — os dois competiriam pela atenção do usuário na mesma tela. Nas
+    // aberturas seguintes (tour já visto), o comportamento de sempre continua valendo.
+    private suspend fun startTourOrVoiceCapture() {
+        if (tourPreferences.observeCompleted().first()) {
             launchVoiceCaptureIfColdStart()
+        } else {
+            tourController.start()
         }
     }
 
