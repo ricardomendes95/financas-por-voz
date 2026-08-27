@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Esquema Android 12+ (API 31+). cloud-backup cobre o Auto Backup pro
+     Google Drive; device-transfer cobre a transferência direta entre
+     aparelhos (cabo/Switch a Android). Os dois só incluem o banco. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <include domain="database" path="financas.db" />
+    </cloud-backup>
+    <device-transfer>
+        <include domain="database" path="financas.db" />
+    </device-transfer>
+</data-extraction-rules>

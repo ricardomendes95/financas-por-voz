@@ -51,6 +51,25 @@ class BankMessageParserTest {
     }
 
     @Test
+    fun `compra no debito do nubank sem a palavra aprovada junto do valor`() {
+        // Formato real: título "Compra no débito aprovada" + corpo "Compra de R$ X em Y." —
+        // a palavra "aprovada" nunca fica na mesma linha do valor.
+        val result = BankMessageParser.parse("Compra de R\$ 5,50 em 99* 99*.")
+        assertNotNull(result)
+        assertEquals(550L, result!!.amountCents)
+        assertEquals(TransactionType.EXPENSE, result.type)
+        assertEquals("99* 99*", result.merchantRaw)
+    }
+
+    @Test
+    fun `compra no debito com titulo e corpo concatenados`() {
+        val result = BankMessageParser.parse("Compra no débito aprovada\nCompra de R\$ 5,50 em 99* 99*.")
+        assertNotNull(result)
+        assertEquals(550L, result!!.amountCents)
+        assertEquals(TransactionType.EXPENSE, result.type)
+    }
+
+    @Test
     fun `debito generico`() {
         val result = BankMessageParser.parse("Débito de R\$ 32,80 em FARMACIA DROGASIL")
         assertNotNull(result)

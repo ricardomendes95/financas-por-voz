@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Esquema pré-Android 12 (API < 31). Só o banco — sem preferências, sem
+     cache, sem os arquivos auxiliares de WAL (transitórios, o AutoBackupAgent
+     já faz checkpoint antes de qualquer backup rodar). -->
+<full-backup-content>
+    <include domain="database" path="financas.db" />
+</full-backup-content>

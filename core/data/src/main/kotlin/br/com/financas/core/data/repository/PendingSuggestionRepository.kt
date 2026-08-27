@@ -38,13 +38,20 @@ class PendingSuggestionRepository @Inject constructor(
         dao.observePending().map { list -> list.map { it.toDomain() } }
 
     /**
+     * @param detectedAt hora real do evento (ex.: `StatusBarNotification.postTime`) — não a hora
+     *   em que o app processou a notificação, que pode chegar alguns segundos depois.
      * @return `true` se uma sugestão nova foi criada; `false` se descartada
      *   por deduplicação (§8.4.3: mesmo valor ±1 centavo, ±30 min de uma
      *   transação já existente).
      */
-    suspend fun suggest(amountCents: Long, type: TransactionType, merchantRaw: String, sourcePackage: String): Boolean {
-        val now = clock.millis()
-        val duplicates = dao.countPossibleDuplicates(amountCents, now - THIRTY_MIN_MS, now + THIRTY_MIN_MS)
+    suspend fun suggest(
+        amountCents: Long,
+        type: TransactionType,
+        merchantRaw: String,
+        sourcePackage: String,
+        detectedAt: Long = clock.millis()
+    ): Boolean {
+        val duplicates = dao.countPossibleDuplicates(amountCents, detectedAt - THIRTY_MIN_MS, detectedAt + THIRTY_MIN_MS)
         if (duplicates > 0) return false
 
         val categoryId = classifyCategory(merchantRaw, type)
@@ -56,7 +63,7 @@ class PendingSuggestionRepository @Inject constructor(
                 merchantRaw = merchantRaw,
                 merchantNormalized = merchantRaw.trim().lowercase(),
                 categoryId = categoryId,
-                detectedAt = now,
+                detectedAt = detectedAt,
                 sourcePackage = sourcePackage,
                 status = STATUS_PENDING
             )

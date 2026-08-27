@@ -44,7 +44,8 @@ fun FinanceNavHost(
                     context.startActivity(intent)
                 },
                 onEditTransaction = { id -> navController.navigate(EditTransaction(id)) },
-                onSeeAllTransactions = { navController.navigate(Transactions) },
+                onSeeAllTransactions = { navController.navigate(Transactions()) },
+                onOpenInsightCategory = { categoryId -> navController.navigate(Transactions(categoryId)) },
                 onOpenSettings = { navController.navigate(Settings) },
                 onOpenReports = { navController.navigate(Reports) },
                 onOpenBudgets = { navController.navigate(Budgets) },

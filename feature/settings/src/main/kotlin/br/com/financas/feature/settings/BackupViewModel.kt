@@ -2,11 +2,15 @@ package br.com.financas.feature.settings
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import br.com.financas.core.data.backup.AutoBackupPreferences
 import br.com.financas.core.data.repository.BackupRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.InputStream
 import java.io.OutputStream
@@ -21,11 +25,19 @@ sealed interface BackupEvent {
 
 @HiltViewModel
 class BackupViewModel @Inject constructor(
-    private val backupRepository: BackupRepository
+    private val backupRepository: BackupRepository,
+    private val autoBackupPreferences: AutoBackupPreferences
 ) : ViewModel() {
 
     private val events = Channel<BackupEvent>(Channel.BUFFERED)
     val eventFlow = events.receiveAsFlow()
+
+    val autoBackupEnabled: StateFlow<Boolean> = autoBackupPreferences.observeEnabled()
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), true)
+
+    fun onAutoBackupToggle(enabled: Boolean) {
+        viewModelScope.launch { autoBackupPreferences.setEnabled(enabled) }
+    }
 
     fun onExport(openOutput: () -> OutputStream?) {
         viewModelScope.launch(Dispatchers.IO) {

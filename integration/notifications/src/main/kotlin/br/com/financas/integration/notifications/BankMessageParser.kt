@@ -20,6 +20,14 @@ object BankMessageParser {
         RegexOption.IGNORE_CASE
     )
 
+    // "Compra no débito aprovada" (título) + "Compra de R$ 5,50 em 99* 99*." (corpo) — o
+    // Nubank não repete "aprovada" na mesma linha do valor, então PURCHASE_APPROVED não bate.
+    // Mais genérica: qualquer "compra [de] R$ X em/no/na Y", sem exigir "aprovada" junto.
+    private val PURCHASE_GENERIC = Regex(
+        """compra\s+(?:de\s+)?R\$\s*([\d.,]+)\s*(?:em|no|na)\s+(.+?)(?:[.\n]|$)""",
+        RegexOption.IGNORE_CASE
+    )
+
     private val PIX = Regex(
         """pix\s+(enviado|recebido).*?R\$\s*([\d.,]+)""",
         RegexOption.IGNORE_CASE
@@ -44,6 +52,11 @@ object BankMessageParser {
 
     fun parse(text: String): BankMessageResult? {
         PURCHASE_APPROVED.find(text)?.let { match ->
+            val cents = parseAmount(match.groupValues[1]) ?: return@let
+            return BankMessageResult(cents, TransactionType.EXPENSE, match.groupValues[2].trim())
+        }
+
+        PURCHASE_GENERIC.find(text)?.let { match ->
             val cents = parseAmount(match.groupValues[1]) ?: return@let
             return BankMessageResult(cents, TransactionType.EXPENSE, match.groupValues[2].trim())
         }

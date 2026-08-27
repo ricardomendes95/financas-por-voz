@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data object Dashboard
 
 @Serializable
-data object Transactions
+data class Transactions(val categoryId: String? = null)
 
 @Serializable
 data class AddTransaction(val type: String? = null)

@@ -3,6 +3,7 @@ package br.com.financas.feature.transactions
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,8 +28,10 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -69,6 +72,7 @@ fun AddEditTransactionScreen(
     }
 
     var showDatePicker by remember { mutableStateOf(false) }
+    var showTimePicker by remember { mutableStateOf(false) }
     var showDeleteConfirm by remember { mutableStateOf(false) }
 
     // TextFieldValue (não só String) pra controlar o cursor explicitamente:
@@ -182,8 +186,13 @@ fun AddEditTransactionScreen(
                 }
             }
 
-            TextButton(onClick = { showDatePicker = true }) {
-                Text(stringResource(R.string.add_transaction_date, RelativeDateFormatter.format(uiState.occurredAt)))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                TextButton(onClick = { showDatePicker = true }) {
+                    Text(stringResource(R.string.add_transaction_date, RelativeDateFormatter.format(uiState.occurredAt)))
+                }
+                TextButton(onClick = { showTimePicker = true }) {
+                    Text(stringResource(R.string.add_transaction_time, RelativeDateFormatter.time(uiState.occurredAt)))
+                }
             }
 
             Button(
@@ -206,7 +215,9 @@ fun AddEditTransactionScreen(
             onDismissRequest = { showDatePicker = false },
             confirmButton = {
                 TextButton(onClick = {
-                    datePickerState.selectedDateMillis?.let { viewModel.onDateChange(it.fromUtcMidnightMillisToLocalMidnight()) }
+                    // Só a data muda aqui — a hora do lançamento é preservada (regra §3: occurredAt
+                    // carrega hora, não só dia; trocar a data não deve zerar a hora pra 00:00).
+                    datePickerState.selectedDateMillis?.let { viewModel.onDateChange(it.toLocalDateKeepingTimeOf(uiState.occurredAt)) }
                     showDatePicker = false
                 }) { Text(stringResource(R.string.add_transaction_date_confirm)) }
             },
@@ -218,6 +229,32 @@ fun AddEditTransactionScreen(
         ) {
             DatePicker(state = datePickerState)
         }
+    }
+
+    if (showTimePicker) {
+        val currentTime = java.time.Instant.ofEpochMilli(uiState.occurredAt)
+            .atZone(java.time.ZoneId.systemDefault())
+            .toLocalTime()
+        val timePickerState = rememberTimePickerState(
+            initialHour = currentTime.hour,
+            initialMinute = currentTime.minute,
+            is24Hour = true
+        )
+        AlertDialog(
+            onDismissRequest = { showTimePicker = false },
+            text = { TimePicker(state = timePickerState) },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.onDateChange(uiState.occurredAt.withTime(timePickerState.hour, timePickerState.minute))
+                    showTimePicker = false
+                }) { Text(stringResource(R.string.add_transaction_date_confirm)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { showTimePicker = false }) {
+                    Text(stringResource(R.string.add_transaction_date_cancel))
+                }
+            }
+        )
     }
 
     if (showDeleteConfirm) {
@@ -263,8 +300,20 @@ private fun Long.toUtcMidnightMillis(): Long {
     return localDate.atStartOfDay(java.time.ZoneOffset.UTC).toInstant().toEpochMilli()
 }
 
-/** Inverso de [toUtcMidnightMillis]: extrai a data do valor UTC do DatePicker e a reconstrói à meia-noite no fuso local. */
-private fun Long.fromUtcMidnightMillisToLocalMidnight(): Long {
-    val localDate = java.time.Instant.ofEpochMilli(this).atZone(java.time.ZoneOffset.UTC).toLocalDate()
-    return localDate.atStartOfDay(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli()
+/**
+ * Troca só a data (ano/mês/dia) do valor UTC do DatePicker, preservando a hora de
+ * [currentOccurredAt] no fuso local — inverso de [toUtcMidnightMillis], mas sem zerar a hora.
+ */
+private fun Long.toLocalDateKeepingTimeOf(currentOccurredAt: Long): Long {
+    val zone = java.time.ZoneId.systemDefault()
+    val newDate = java.time.Instant.ofEpochMilli(this).atZone(java.time.ZoneOffset.UTC).toLocalDate()
+    val currentTime = java.time.Instant.ofEpochMilli(currentOccurredAt).atZone(zone).toLocalTime()
+    return newDate.atTime(currentTime).atZone(zone).toInstant().toEpochMilli()
+}
+
+/** Troca só a hora/minuto, preservando a data local atual. */
+private fun Long.withTime(hour: Int, minute: Int): Long {
+    val zone = java.time.ZoneId.systemDefault()
+    val date = java.time.Instant.ofEpochMilli(this).atZone(zone).toLocalDate()
+    return date.atTime(hour, minute).atZone(zone).toInstant().toEpochMilli()
 }

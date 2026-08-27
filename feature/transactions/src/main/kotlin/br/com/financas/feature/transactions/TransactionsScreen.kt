@@ -1,6 +1,7 @@
 package br.com.financas.feature.transactions
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,10 +12,13 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
@@ -30,6 +34,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -123,6 +130,45 @@ fun TransactionsScreen(
                             onClick = { viewModel.onTypeFilterChange(filter) },
                             label = { Text(filter.label()) }
                         )
+                    }
+                }
+            }
+
+            item(key = "category_filter") {
+                var expanded by remember { mutableStateOf(false) }
+                // Com "Todos" selecionado, uiState.typeFilter.type é null — nesse caso não filtra
+                // por tipo (mostra todas), em vez de só as categorias sem tipo definido.
+                val filterType = uiState.typeFilter.type
+                val categoriesForType = uiState.allCategories.filter {
+                    filterType == null || it.type == null || it.type == filterType
+                }
+                val selectedName = categoriesForType.firstOrNull { it.id == uiState.categoryFilter }?.name
+                    ?: stringResource(R.string.transactions_category_all)
+
+                Box {
+                    FilterChip(
+                        selected = uiState.categoryFilter != null,
+                        onClick = { expanded = true },
+                        label = { Text(selectedName) },
+                        trailingIcon = { Icon(Icons.Filled.ArrowDropDown, contentDescription = null) }
+                    )
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.transactions_category_all)) },
+                            onClick = {
+                                viewModel.onCategoryFilterChange(null)
+                                expanded = false
+                            }
+                        )
+                        categoriesForType.forEach { category ->
+                            DropdownMenuItem(
+                                text = { Text(category.name) },
+                                onClick = {
+                                    viewModel.onCategoryFilterChange(category.id)
+                                    expanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }

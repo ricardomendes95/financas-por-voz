@@ -32,14 +32,21 @@ class BankNotificationListener : NotificationListenerService() {
             if (sbn.packageName !in allowed) return@launch
 
             val text = sbn.notification.extras.getCharSequence(Notification.EXTRA_TEXT)?.toString() ?: return@launch
-            val result = BankMessageParser.parse(text) ?: return@launch
+            // Alguns formatos (ex.: "Compra no débito aprovada" do Nubank) só têm a palavra
+            // "aprovada" no título — juntar os dois dá mais chance de bater numa regra.
+            val title = sbn.notification.extras.getCharSequence(Notification.EXTRA_TITLE)?.toString().orEmpty()
+            val combined = if (title.isBlank()) text else "$title\n$text"
+            val result = BankMessageParser.parse(combined) ?: return@launch
             val merchant = MerchantNormalizer.normalize(result.merchantRaw)
 
             suggestionRepository.suggest(
                 amountCents = result.amountCents,
                 type = result.type,
                 merchantRaw = merchant,
-                sourcePackage = sbn.packageName
+                sourcePackage = sbn.packageName,
+                // Hora real da compra/transferência — não a hora em que o app processou a
+                // notificação, que pode chegar alguns segundos depois via WorkManager/scope.
+                detectedAt = sbn.postTime
             )
         }
     }

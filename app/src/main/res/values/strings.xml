@@ -7,4 +7,7 @@
     <string name="sc_expense_long">Adicionar despesa</string>
     <string name="sc_income_short">Nova receita</string>
     <string name="sc_income_long">Adicionar receita</string>
+    <string name="corrupted_backup_title">Cópia de segurança com problema</string>
+    <string name="corrupted_backup_message">Encontramos uma cópia de segurança automática ao instalar o app, mas ela parece corrompida. Se ainda tiver acesso ao aparelho antigo, abra o app lá e use \"Exportar backup\" em Configurações antes de continuar aqui — assim você não perde o histórico. Se preferir, pode continuar com uma base de dados nova.</string>
+    <string name="corrupted_backup_continue">Continuar com dados novos</string>
 </resources>

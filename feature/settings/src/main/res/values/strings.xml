@@ -48,6 +48,8 @@
     <string name="settings_backup_import_confirm_message">Todos os dados atuais do app serão substituídos pelos dados desse arquivo. Essa ação não pode ser desfeita.</string>
     <string name="settings_backup_import_confirm">Restaurar</string>
     <string name="settings_backup_import_cancel">Cancelar</string>
+    <string name="settings_auto_backup_title">Backup automático</string>
+    <string name="settings_auto_backup_hint">O Android guarda uma cópia do banco na sua conta Google automaticamente — usada só se você reinstalar o app ou trocar de aparelho.</string>
     <string name="settings_closing_section">Fechamento mensal</string>
     <string name="settings_closing_button">Ver resumo do mês anterior</string>
     <string name="settings_bank_section">Notificações do banco</string>

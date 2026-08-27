@@ -12,6 +12,11 @@ object RelativeDateFormatter {
 
     private val PT_BR = Locale.Builder().setLanguage("pt").setRegion("BR").build()
     private val DAY_MONTH = DateTimeFormatter.ofPattern("d 'de' MMM", PT_BR)
+    private val HOUR_MINUTE = DateTimeFormatter.ofPattern("HH:mm", PT_BR)
+
+    /** "08:25" — hora exata em que o lançamento ocorreu (voz/notificação) ou foi editado manualmente. */
+    fun time(epochMillis: Long, zone: ZoneId = ZoneId.systemDefault()): String =
+        Instant.ofEpochMilli(epochMillis).atZone(zone).toLocalTime().format(HOUR_MINUTE)
 
     fun format(epochMillis: Long, zone: ZoneId = ZoneId.systemDefault(), today: LocalDate = LocalDate.now(zone)): String {
         val date = Instant.ofEpochMilli(epochMillis).atZone(zone).toLocalDate()

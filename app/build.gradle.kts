@@ -71,6 +71,7 @@ android {
 dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:common"))
+    implementation(project(":core:database"))
     implementation(project(":core:data"))
     implementation(project(":core:designsystem"))
     implementation(project(":feature:dashboard"))
@@ -94,6 +95,7 @@ dependencies {
     implementation(libs.compose.ui.tooling.preview)
     debugImplementation(libs.compose.ui.tooling)
     implementation(libs.compose.material3)
+    implementation(libs.compose.material.icons.extended)
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
 

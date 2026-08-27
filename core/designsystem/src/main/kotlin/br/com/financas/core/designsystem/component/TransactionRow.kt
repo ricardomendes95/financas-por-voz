@@ -46,7 +46,7 @@ fun TransactionRow(item: TransactionListItem, onClick: () -> Unit, modifier: Mod
         Column(modifier = Modifier.weight(1f)) {
             Text(text = item.description, style = MaterialTheme.typography.bodyLarge)
             Text(
-                text = "${item.categoryName} · ${RelativeDateFormatter.format(item.occurredAt)}",
+                text = "${item.categoryName} · ${RelativeDateFormatter.format(item.occurredAt)}, ${RelativeDateFormatter.time(item.occurredAt)}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

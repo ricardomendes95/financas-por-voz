@@ -1,5 +1,6 @@
 package br.com.financas.feature.transactions
 
+import br.com.financas.core.model.Category
 import br.com.financas.core.model.TransactionListItem
 import br.com.financas.core.model.TransactionType
 
@@ -16,6 +17,9 @@ data class TransactionsUiState(
     val typeFilter: TypeFilter = TypeFilter.ALL,
     val totalCents: Long = 0L,
     val searchQuery: String = "",
+    /** `null` = todas as categorias. */
+    val categoryFilter: String? = null,
+    val allCategories: List<Category> = emptyList(),
     val isLoading: Boolean = true
 ) {
     /** Enquanto há busca ativa, os resultados abrangem todos os meses — o total do período perde sentido. */

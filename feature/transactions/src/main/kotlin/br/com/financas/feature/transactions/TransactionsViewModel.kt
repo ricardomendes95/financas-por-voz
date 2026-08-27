@@ -1,5 +1,6 @@
 package br.com.financas.feature.transactions
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import br.com.financas.core.common.RelativeDateFormatter
@@ -29,13 +30,17 @@ import javax.inject.Inject
 class TransactionsViewModel @Inject constructor(
     private val transactionRepository: TransactionRepository,
     categoryRepository: CategoryRepository,
-    clock: Clock
+    clock: Clock,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val zone: ZoneId = clock.zone
 
     private val selectedYearMonth = MutableStateFlow(YearMonthUtils.currentYearMonth(zone))
     private val typeFilter = MutableStateFlow(TypeFilter.ALL)
+    // Vem preenchido quando a tela é aberta a partir de um insight do Dashboard
+    // ("N lançamentos sem categoria") — já chega filtrado na categoria em questão.
+    private val categoryFilter = MutableStateFlow(savedStateHandle.get<String>("categoryId"))
     private val searchQuery = MutableStateFlow("")
 
     fun onPreviousMonth() {
@@ -48,11 +53,22 @@ class TransactionsViewModel @Inject constructor(
 
     fun onTypeFilterChange(filter: TypeFilter) {
         typeFilter.update { filter }
+        // Trocar de tipo pode deixar a categoria selecionada incompatível (ex.: uma categoria
+        // de despesa filtrada enquanto se olha só receitas) — mais simples resetar do que validar.
+        categoryFilter.update { null }
+    }
+
+    fun onCategoryFilterChange(categoryId: String?) {
+        categoryFilter.update { current -> if (current == categoryId) null else categoryId }
     }
 
     fun onSearchQueryChange(query: String) {
         searchQuery.update { query }
     }
+
+    // Combinados num único Flow porque `combine` só tem sobrecarga fixa até 5 flows.
+    private val filters: Flow<Pair<TypeFilter, String?>> =
+        combine(typeFilter, categoryFilter) { type, category -> type to category }
 
     // Com busca ativa, os lançamentos vêm de todos os meses (não só do selecionado) —
     // é assim que dá pra achar "os fies" de vários meses digitando o nome uma vez.
@@ -67,11 +83,14 @@ class TransactionsViewModel @Inject constructor(
         transactionsSource,
         categoryRepository.observeActive(),
         selectedYearMonth,
-        typeFilter,
+        filters,
         searchQuery
-    ) { transactions, categories, yearMonth, filter, query ->
+    ) { transactions, categories, yearMonth, (filter, categoryId), query ->
         val categoryById = categories.associateBy(Category::id)
-        val filtered = transactions.filter { filter.type == null || it.type == filter.type }
+        val filtered = transactions.filter { transaction ->
+            (filter.type == null || transaction.type == filter.type) &&
+                (categoryId == null || transaction.categoryId == categoryId)
+        }
         val items = filtered.map { it.toListItem(categoryById) }
         val groups = items
             .groupBy { RelativeDateFormatter.sectionHeader(it.occurredAt, zone) }
@@ -83,6 +102,8 @@ class TransactionsViewModel @Inject constructor(
             typeFilter = filter,
             totalCents = total,
             searchQuery = query,
+            categoryFilter = categoryId,
+            allCategories = categories,
             isLoading = false
         )
     }

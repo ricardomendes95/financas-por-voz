@@ -7,6 +7,7 @@
     <string name="transactions_next_month">Próximo mês</string>
     <string name="transactions_search">Pesquisar por nome</string>
     <string name="transactions_search_clear">Limpar pesquisa</string>
+    <string name="transactions_category_all">Todas as categorias</string>
 
     <string name="add_transaction_title">Novo lançamento</string>
     <string name="edit_transaction_title">Editar lançamento</string>
@@ -17,6 +18,7 @@
     <string name="add_transaction_category">Categoria</string>
     <string name="add_transaction_payment">Forma de pagamento</string>
     <string name="add_transaction_date">Data: %1$s</string>
+    <string name="add_transaction_time">Hora: %1$s</string>
     <string name="add_transaction_date_confirm">OK</string>
     <string name="add_transaction_date_cancel">Cancelar</string>
     <string name="add_transaction_save">Salvar</string>

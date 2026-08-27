@@ -61,6 +61,7 @@ fun DashboardScreen(
     onOpenReports: () -> Unit,
     onOpenBudgets: () -> Unit,
     onOpenRecurring: () -> Unit,
+    onOpenInsightCategory: (String) -> Unit,
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
@@ -75,6 +76,7 @@ fun DashboardScreen(
         onOpenReports = onOpenReports,
         onOpenBudgets = onOpenBudgets,
         onOpenRecurring = onOpenRecurring,
+        onOpenInsightCategory = onOpenInsightCategory,
         onConfirmSuggestion = viewModel::onConfirmSuggestion,
         onIgnoreSuggestion = viewModel::onIgnoreSuggestion,
         modifier = modifier
@@ -93,6 +95,7 @@ private fun DashboardContent(
     onOpenReports: () -> Unit,
     onOpenBudgets: () -> Unit,
     onOpenRecurring: () -> Unit,
+    onOpenInsightCategory: (String) -> Unit,
     onConfirmSuggestion: (String) -> Unit,
     onIgnoreSuggestion: (String) -> Unit,
     modifier: Modifier = Modifier
@@ -158,7 +161,7 @@ private fun DashboardContent(
             }
 
             if (state.insights.isNotEmpty()) {
-                item(key = "insights") { InsightCarousel(state.insights) }
+                item(key = "insights") { InsightCarousel(state.insights, onOpenInsightCategory) }
             }
 
             item(key = "recent_header") {
@@ -241,11 +244,14 @@ private fun PendingSuggestionCard(
 }
 
 @Composable
-private fun InsightCarousel(insights: List<Insight>) {
+private fun InsightCarousel(insights: List<Insight>, onOpenCategory: (String) -> Unit) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
         items(insights, key = { it.type.name + it.message.hashCode() }) { insight ->
+            val categoryId = insight.relatedCategoryId
             Card(
-                modifier = Modifier.width(260.dp),
+                modifier = Modifier
+                    .width(260.dp)
+                    .let { if (categoryId != null) it.clickable { onOpenCategory(categoryId) } else it },
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
             ) {
                 Text(
