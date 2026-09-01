@@ -10,7 +10,9 @@ data class CategoryReportRow(
 data class MonthlyTrend(
     val yearMonth: Int,
     val incomeCents: Long,
-    val expenseCents: Long
+    val expenseCents: Long,
+    /** Saldo acumulado (carry-over) até o fim deste mês — nunca reseta na virada do mês. */
+    val accumulatedBalanceCents: Long = 0L
 )
 
 data class PaymentMethodBreakdown(

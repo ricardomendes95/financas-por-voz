@@ -59,6 +59,29 @@ interface TransactionDao {
     )
     fun observeMonthlySummary(yearMonth: Int): Flow<List<MonthlySummaryRow>>
 
+    /**
+     * Saldo acumulado de TODOS os meses anteriores ao informado — carry-over
+     * entre meses (o saldo não zera na virada do mês). `yearMonth` é indexado,
+     * então o `<` faz um range scan, não um `SCAN TABLE` (regra §11.10).
+     */
+    @Query(
+        """
+        SELECT type, SUM(amountCents) AS total FROM transactions
+        WHERE yearMonth < :yearMonth AND excludeFromReports = 0
+        GROUP BY type
+        """
+    )
+    fun observeCarryOver(yearMonth: Int): Flow<List<MonthlySummaryRow>>
+
+    @Query(
+        """
+        SELECT type, SUM(amountCents) AS total FROM transactions
+        WHERE yearMonth < :yearMonth AND excludeFromReports = 0
+        GROUP BY type
+        """
+    )
+    suspend fun carryOverTotals(yearMonth: Int): List<MonthlySummaryRow>
+
     @Query(
         """
         SELECT categoryId, SUM(amountCents) AS total, COUNT(*) AS qty

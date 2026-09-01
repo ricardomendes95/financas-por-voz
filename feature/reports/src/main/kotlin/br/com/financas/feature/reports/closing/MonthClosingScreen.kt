@@ -72,6 +72,14 @@ fun MonthClosingScreen(
                             style = MaterialTheme.typography.titleLarge
                         )
                         Text(
+                            stringResource(
+                                R.string.closing_accumulated_balance,
+                                MoneyFormatter.format(uiState.accumulatedBalanceCents)
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (uiState.accumulatedBalanceCents < 0) FinanceTheme.colors.expense else FinanceTheme.colors.income
+                        )
+                        Text(
                             stringResource(R.string.closing_savings_rate, uiState.savingsRatePercent),
                             style = MaterialTheme.typography.bodyMedium
                         )

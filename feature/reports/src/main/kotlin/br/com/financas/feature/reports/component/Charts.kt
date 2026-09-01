@@ -54,6 +54,41 @@ fun SimpleBarChart(values: List<Float>, color: Color, modifier: Modifier = Modif
     }
 }
 
+/**
+ * Linha de saldo acumulado — ao contrário de `DualLineChart` (sempre >= 0,
+ * entradas/saídas), aqui o valor pode ser negativo, então a escala usa
+ * min/max reais da série e desenha uma linha de referência em zero.
+ */
+@Composable
+fun BalanceLineChart(values: List<Float>, positiveColor: Color, negativeColor: Color, modifier: Modifier = Modifier) {
+    Canvas(modifier = modifier) {
+        if (values.isEmpty()) return@Canvas
+        val maxValue = values.max().coerceAtLeast(0f)
+        val minValue = values.min().coerceAtMost(0f)
+        val range = (maxValue - minValue).takeIf { it > 0f } ?: 1f
+
+        fun yOf(value: Float): Float = size.height - ((value - minValue) / range) * size.height
+
+        val zeroY = yOf(0f)
+        drawLine(
+            color = Color.Gray.copy(alpha = 0.4f),
+            start = Offset(0f, zeroY),
+            end = Offset(size.width, zeroY),
+            strokeWidth = 2f
+        )
+
+        val path = Path()
+        val denom = (values.size - 1).coerceAtLeast(1)
+        values.forEachIndexed { index, value ->
+            val x = size.width * index / denom
+            val y = yOf(value)
+            if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
+        }
+        val lineColor = if ((values.lastOrNull() ?: 0f) >= 0f) positiveColor else negativeColor
+        drawPath(path, color = lineColor, style = Stroke(width = 5f))
+    }
+}
+
 @Composable
 fun DualLineChart(
     seriesA: List<Float>,

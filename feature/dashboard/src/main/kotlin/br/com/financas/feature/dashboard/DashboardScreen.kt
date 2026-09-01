@@ -318,10 +318,10 @@ private fun spokenBalance(cents: Long): String {
 
 @Composable
 private fun BalanceCard(state: DashboardUiState) {
-    val isNegative = state.balanceCents < 0
+    val isNegative = state.accumulatedBalanceCents < 0
     // Anima do valor anterior até o novo em ~600ms — nunca "pula" (§10.3).
     val animatedCents by androidx.compose.animation.core.animateIntAsState(
-        targetValue = state.balanceCents.toInt(),
+        targetValue = state.accumulatedBalanceCents.toInt(),
         animationSpec = androidx.compose.animation.core.spring(dampingRatio = 0.8f),
         label = "balance"
     )
@@ -331,7 +331,7 @@ private fun BalanceCard(state: DashboardUiState) {
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Text(
-                text = stringResource(R.string.dashboard_month_balance),
+                text = stringResource(R.string.dashboard_total_balance),
                 style = MaterialTheme.typography.labelMedium
             )
             Spacer(Modifier.height(4.dp))
@@ -342,7 +342,7 @@ private fun BalanceCard(state: DashboardUiState) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .semantics {
-                        contentDescription = spokenBalance(state.balanceCents)
+                        contentDescription = spokenBalance(state.accumulatedBalanceCents)
                     }
             )
             Spacer(Modifier.height(8.dp))
@@ -360,6 +360,25 @@ private fun BalanceCard(state: DashboardUiState) {
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = stringResource(R.string.dashboard_month_result, MoneyFormatter.format(state.balanceCents)),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(12.dp))
+            androidx.compose.material3.HorizontalDivider()
+            Spacer(Modifier.height(12.dp))
+            val previousResultText = if (state.previousMonthBalanceCents >= 0) {
+                stringResource(R.string.dashboard_previous_month_surplus, MoneyFormatter.format(state.previousMonthBalanceCents))
+            } else {
+                stringResource(R.string.dashboard_previous_month_deficit, MoneyFormatter.format(-state.previousMonthBalanceCents))
+            }
+            Text(
+                text = previousResultText,
+                style = MaterialTheme.typography.labelMedium,
+                color = if (state.previousMonthBalanceCents >= 0) FinanceTheme.colors.income else FinanceTheme.colors.expense
+            )
         }
     }
 }

@@ -49,14 +49,27 @@ class ReportsRepository @Inject constructor(
         val months = (0 until monthsBack).map { offsetMonth(referenceYearMonth, -it) }.sorted()
         val rows = dao.monthlyTotalsForMonths(months)
         val byMonth = rows.groupBy { it.yearMonth }
+        var running = carryOverBalance(months.first())
         return months.map { ym ->
             val monthRows = byMonth[ym].orEmpty()
+            val income = monthRows.firstOrNull { it.type == "INCOME" }?.total ?: 0L
+            val expense = monthRows.firstOrNull { it.type == "EXPENSE" }?.total ?: 0L
+            running += income - expense
             MonthlyTrend(
                 yearMonth = ym,
-                incomeCents = monthRows.firstOrNull { it.type == "INCOME" }?.total ?: 0L,
-                expenseCents = monthRows.firstOrNull { it.type == "EXPENSE" }?.total ?: 0L
+                incomeCents = income,
+                expenseCents = expense,
+                accumulatedBalanceCents = running
             )
         }
+    }
+
+    /** Saldo de todos os meses ANTERIORES a `yearMonth` — ponto de partida do saldo acumulado (nunca soma em Kotlin, só combina somas já feitas em SQL). */
+    private suspend fun carryOverBalance(yearMonth: Int): Long {
+        val rows = dao.carryOverTotals(yearMonth)
+        val income = rows.firstOrNull { it.type == "INCOME" }?.total ?: 0L
+        val expense = rows.firstOrNull { it.type == "EXPENSE" }?.total ?: 0L
+        return income - expense
     }
 
     suspend fun paymentMethodBreakdown(yearMonth: Int): List<PaymentMethodBreakdown> =

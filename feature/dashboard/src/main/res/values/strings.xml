@@ -4,7 +4,10 @@
     <string name="dashboard_voice_capture">Lançar por voz</string>
     <string name="dashboard_recent_transactions">Últimos lançamentos</string>
     <string name="dashboard_see_all">Ver todos</string>
-    <string name="dashboard_month_balance">Saldo do mês</string>
+    <string name="dashboard_total_balance">Saldo total</string>
+    <string name="dashboard_month_result">Resultado do mês: %1$s</string>
+    <string name="dashboard_previous_month_surplus">Sobra da receita do mês anterior: %1$s</string>
+    <string name="dashboard_previous_month_deficit">Déficit de receita do mês anterior: %1$s</string>
     <string name="dashboard_empty_state">Nenhum gasto ainda. Toque em Adicionar e diga seu primeiro gasto.</string>
     <string name="dashboard_settings">Configurações</string>
     <string name="dashboard_reports">Relatórios</string>

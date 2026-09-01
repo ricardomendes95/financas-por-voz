@@ -45,6 +45,7 @@ import br.com.financas.core.common.MoneyFormatter
 import br.com.financas.core.designsystem.component.CategoryIcons
 import br.com.financas.core.designsystem.theme.FinanceTheme
 import br.com.financas.core.designsystem.tour.tourTarget
+import br.com.financas.feature.reports.component.BalanceLineChart
 import br.com.financas.feature.reports.component.DonutChart
 import br.com.financas.feature.reports.component.DualLineChart
 import br.com.financas.feature.reports.component.SimpleBarChart
@@ -220,7 +221,7 @@ private fun CategoriesTab(state: ReportsUiState) {
 
 @Composable
 private fun EvolutionTab(state: ReportsUiState) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    Column(modifier = Modifier.fillMaxSize().padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(16.dp)) {
                 Row(horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -234,6 +235,27 @@ private fun EvolutionTab(state: ReportsUiState) {
                     colorA = FinanceTheme.colors.income,
                     colorB = FinanceTheme.colors.expense,
                     modifier = Modifier.fillMaxWidth().height(180.dp)
+                )
+            }
+        }
+
+        Card(modifier = Modifier.fillMaxWidth()) {
+            Column(modifier = Modifier.padding(16.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Text(stringResource(R.string.reports_accumulated_balance), style = MaterialTheme.typography.labelMedium)
+                    val current = state.trend.lastOrNull()?.accumulatedBalanceCents ?: 0L
+                    Text(
+                        MoneyFormatter.format(current),
+                        style = MaterialTheme.typography.titleMedium,
+                        color = if (current < 0) FinanceTheme.colors.expense else FinanceTheme.colors.income
+                    )
+                }
+                Spacer(Modifier.height(12.dp))
+                BalanceLineChart(
+                    values = state.trend.map { it.accumulatedBalanceCents.toFloat() },
+                    positiveColor = FinanceTheme.colors.income,
+                    negativeColor = FinanceTheme.colors.expense,
+                    modifier = Modifier.fillMaxWidth().height(140.dp)
                 )
             }
         }

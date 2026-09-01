@@ -6,9 +6,14 @@ import br.com.financas.core.model.TransactionListItem
 data class DashboardUiState(
     val yearMonth: Int = 0,
     val monthLabel: String = "",
+    /** Saldo total acumulado (carry-over de todos os meses + este) — é o número "hero" do card. */
+    val accumulatedBalanceCents: Long = 0,
+    /** Resultado só deste mês (entrou - saiu) — não é mais o número principal, mas segue exibido. */
     val balanceCents: Long = 0,
     val incomeCents: Long = 0,
     val expenseCents: Long = 0,
+    /** Resultado (entrou - saiu) do mês anterior — explica quanto do saldo total veio de lá: sobra soma, déficit subtrai. */
+    val previousMonthBalanceCents: Long = 0,
     val recentTransactions: List<TransactionListItem> = emptyList(),
     /** No máximo 3 visíveis no carrossel (§6.1) — o engine já devolve ranqueado por impacto. */
     val insights: List<Insight> = emptyList(),

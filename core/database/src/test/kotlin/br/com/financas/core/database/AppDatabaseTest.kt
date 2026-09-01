@@ -87,6 +87,24 @@ class AppDatabaseTest {
         assertThat(income).isEqualTo(50000L)
     }
 
+    @Test
+    fun `saldo acumulado soma so os meses anteriores, nunca o mes corrente`() = runBlocking {
+        seedAccountAndCategory()
+
+        insertTransaction(amountCents = 999, type = TransactionType.EXPENSE, yearMonth = 202607)
+        insertTransaction(amountCents = 500_00, type = TransactionType.INCOME, yearMonth = 202607)
+        insertTransaction(amountCents = 1000, type = TransactionType.EXPENSE, yearMonth = 202606)
+        // Do mês corrente (202608) o carry-over não deve incluir nada.
+        insertTransaction(amountCents = 2000, type = TransactionType.EXPENSE, yearMonth = 202608)
+
+        val carryOver = db.transactionDao().carryOverTotals(202608)
+        val expense = carryOver.first { it.type == "EXPENSE" }.total
+        val income = carryOver.first { it.type == "INCOME" }.total
+
+        assertThat(expense).isEqualTo(1999L)
+        assertThat(income).isEqualTo(50000L)
+    }
+
     private suspend fun seedAccountAndCategory() {
         db.accountDao().insert(
             AccountEntity(

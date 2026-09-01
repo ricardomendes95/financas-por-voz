@@ -60,7 +60,7 @@ class MonthClosingViewModel @Inject constructor(
                 )
             }
 
-            val trend = reportsRepository.monthlyTrend(12)
+            val trend = reportsRepository.monthlyTrend(monthsBack = 12)
             val closedTrend = trend.firstOrNull { it.yearMonth == closedYearMonth }
             val previousIndex = trend.indexOfFirst { it.yearMonth == closedYearMonth } - 1
             val previous = trend.getOrNull(previousIndex)
@@ -83,6 +83,7 @@ class MonthClosingViewModel @Inject constructor(
                     incomeCents = income,
                     expenseCents = expense,
                     balanceCents = income - expense,
+                    accumulatedBalanceCents = closedTrend?.accumulatedBalanceCents ?: 0L,
                     savingsRatePercent = savingsRate,
                     topCategories = categoryReportUi.take(3),
                     opportunities = insights,

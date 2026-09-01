@@ -8,6 +8,8 @@ data class MonthClosingUiState(
     val incomeCents: Long = 0,
     val expenseCents: Long = 0,
     val balanceCents: Long = 0,
+    /** Saldo total acumulado após fechar este mês — carry-over para o mês seguinte. */
+    val accumulatedBalanceCents: Long = 0,
     val savingsRatePercent: Int = 0,
     val topCategories: List<CategoryReportUi> = emptyList(),
     /** As 5 maiores oportunidades de economia — insights com maior impacto em R$. */

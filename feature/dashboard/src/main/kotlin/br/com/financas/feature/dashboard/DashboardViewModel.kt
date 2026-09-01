@@ -40,6 +40,7 @@ class DashboardViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val yearMonth = YearMonthUtils.yearMonthOf(clock.millis())
+    private val previousYearMonth = YearMonthUtils.plusMonths(yearMonth, -1)
 
     /** Recalculado ao abrir o Dashboard (§7), não em segundo plano contínuo. */
     private val insights = MutableStateFlow<List<Insight>>(emptyList())
@@ -52,6 +53,7 @@ class DashboardViewModel @Inject constructor(
 
     val uiState: StateFlow<DashboardUiState> = combine(
         transactionRepository.observeMonthlySummary(yearMonth),
+        transactionRepository.observeMonthlySummary(previousYearMonth),
         transactionRepository.observeRecent(limit = 8),
         categoryRepository.observeActive(),
         budgetRepository.observeByMonth(yearMonth),
@@ -59,16 +61,17 @@ class DashboardViewModel @Inject constructor(
         insights
     ) { values ->
         val summary = values[0] as MonthlySummary
+        val previousSummary = values[1] as MonthlySummary
         @Suppress("UNCHECKED_CAST")
-        val recent = values[1] as List<Transaction>
+        val recent = values[2] as List<Transaction>
         @Suppress("UNCHECKED_CAST")
-        val categories = values[2] as List<Category>
+        val categories = values[3] as List<Category>
         @Suppress("UNCHECKED_CAST")
-        val budgets = values[3] as List<Budget>
+        val budgets = values[4] as List<Budget>
         @Suppress("UNCHECKED_CAST")
-        val pending = values[4] as List<PendingSuggestion>
+        val pending = values[5] as List<PendingSuggestion>
         @Suppress("UNCHECKED_CAST")
-        val insightList = values[5] as List<Insight>
+        val insightList = values[6] as List<Insight>
 
         val categoryById = categories.associateBy(Category::id)
         val generalLimit = budgets.firstOrNull { it.categoryId == null }?.limitCents
@@ -77,9 +80,11 @@ class DashboardViewModel @Inject constructor(
         DashboardUiState(
             yearMonth = yearMonth,
             monthLabel = YearMonthUtils.fullMonthLabel(yearMonth),
+            accumulatedBalanceCents = summary.accumulatedBalanceCents,
             balanceCents = summary.balanceCents,
             incomeCents = summary.totalIncomeCents,
             expenseCents = summary.totalExpenseCents,
+            previousMonthBalanceCents = previousSummary.balanceCents,
             recentTransactions = recent.map { it.toListItem(categoryById) },
             insights = insightList.take(3),
             budgetLimitCents = generalLimit,

@@ -22,12 +22,14 @@
     <string name="reports_payment_unknown">Não informado</string>
     <string name="reports_income">Entradas</string>
     <string name="reports_expense">Saídas</string>
+    <string name="reports_accumulated_balance">Saldo acumulado</string>
     <string name="reports_compare_category">Categoria</string>
 
     <string name="closing_title">Fechamento — %1$s</string>
     <string name="closing_income">Entrou</string>
     <string name="closing_expense">Saiu</string>
     <string name="closing_balance">Sobrou %1$s</string>
+    <string name="closing_accumulated_balance">Saldo acumulado: %1$s</string>
     <string name="closing_savings_rate">Taxa de poupança: %1$d%%</string>
     <string name="closing_vs_last_month">%1$s%% vs. mês anterior</string>
     <string name="closing_top_categories">Top 3 categorias</string>

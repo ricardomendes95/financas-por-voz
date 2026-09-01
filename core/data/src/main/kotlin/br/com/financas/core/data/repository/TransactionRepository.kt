@@ -11,6 +11,7 @@ import br.com.financas.core.model.Transaction
 import br.com.financas.core.model.TransactionDraft
 import br.com.financas.core.model.TransactionType
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import java.time.Clock
@@ -35,10 +36,15 @@ class TransactionRepository @Inject constructor(
         dao.search(query).map { list -> list.map { it.toDomain() } }.distinctUntilChanged()
 
     fun observeMonthlySummary(yearMonth: Int): Flow<MonthlySummary> =
-        dao.observeMonthlySummary(yearMonth).map { rows ->
-            val income = rows.firstOrNull { it.type == TransactionType.INCOME.name }?.total ?: 0L
-            val expense = rows.firstOrNull { it.type == TransactionType.EXPENSE.name }?.total ?: 0L
-            MonthlySummary(yearMonth, income, expense)
+        combine(
+            dao.observeMonthlySummary(yearMonth),
+            dao.observeCarryOver(yearMonth)
+        ) { monthRows, carryRows ->
+            val income = monthRows.firstOrNull { it.type == TransactionType.INCOME.name }?.total ?: 0L
+            val expense = monthRows.firstOrNull { it.type == TransactionType.EXPENSE.name }?.total ?: 0L
+            val carryIncome = carryRows.firstOrNull { it.type == TransactionType.INCOME.name }?.total ?: 0L
+            val carryExpense = carryRows.firstOrNull { it.type == TransactionType.EXPENSE.name }?.total ?: 0L
+            MonthlySummary(yearMonth, income, expense, carryOverCents = carryIncome - carryExpense)
         }.distinctUntilChanged()
 
     fun observeNeedsReviewCount(): Flow<Int> = dao.observeNeedsReviewCount().distinctUntilChanged()
