@@ -40,6 +40,17 @@ object BankMessageParser {
         """(?:transfer[êe]ncia\s+recebida|recebemos\s+sua\s+transfer[êe]ncia).*?R\$\s*([\d.,]+)""",
         RegexOption.IGNORE_CASE
     )
+
+    // Formato real do Nubank para Pix recebido: título "Transferência
+    // recebida" (sozinho) + corpo "Você recebeu uma transferência de\nR$
+    // 100,00 de FULANO." — a palavra "recebida" só existe no título, e como
+    // o listener junta título e corpo com "\n" (que "." não atravessa),
+    // TRANSFER_RECEIVED não bate. Aqui casamos o corpo isolado, já
+    // aproveitando para capturar quem enviou.
+    private val TRANSFER_RECEIVED_WITH_SENDER = Regex(
+        """recebeu\s+uma\s+transfer[êe]ncia\s+de\s*R\$\s*([\d.,]+)\s*de\s+(.+?)(?:[.\n]|$)""",
+        RegexOption.IGNORE_CASE
+    )
     private val TRANSFER_SENT = Regex(
         """(?:transfer[êe]ncia\s+enviada|enviamos\s+sua\s+transfer[êe]ncia).*?R\$\s*([\d.,]+)""",
         RegexOption.IGNORE_CASE
@@ -69,6 +80,13 @@ object BankMessageParser {
                 TransactionType.EXPENSE
             }
             return BankMessageResult(cents, type, "Pix")
+        }
+
+        TRANSFER_RECEIVED_WITH_SENDER.find(text)?.let { match ->
+            val cents = parseAmount(match.groupValues[1]) ?: return@let
+            val sender = match.groupValues[2].trim()
+            val merchant = if (sender.isBlank()) "Pix recebido" else "Pix recebido de $sender"
+            return BankMessageResult(cents, TransactionType.INCOME, merchant)
         }
 
         TRANSFER_RECEIVED.find(text)?.let { match ->

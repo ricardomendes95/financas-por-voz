@@ -43,6 +43,19 @@ class BankMessageParserTest {
     }
 
     @Test
+    fun `transferencia recebida do nubank com titulo separado do corpo gera receita e captura remetente`() {
+        // Formato real: notificação com título "Transferência recebida" e
+        // corpo "Você recebeu uma transferência de\nR$ 100,00 de FULANO.".
+        val result = BankMessageParser.parse(
+            "Transferência recebida\nVocê recebeu uma transferência de\nR\$ 100,00 de REGIA PATRICIA DE MORAES VILAR."
+        )
+        assertNotNull(result)
+        assertEquals(10_000L, result!!.amountCents)
+        assertEquals(TransactionType.INCOME, result.type)
+        assertEquals("Pix recebido de REGIA PATRICIA DE MORAES VILAR", result.merchantRaw)
+    }
+
+    @Test
     fun `transferencia enviada sem mencionar pix gera despesa`() {
         val result = BankMessageParser.parse("Transferência enviada: R\$ 50,00 para Fulano de Tal")
         assertNotNull(result)
